@@ -1,0 +1,31 @@
+# Portfolio Backend v1.0
+
+Backend powering my AI-powered developer portfolio.
+
+## Features
+
+- AI Chatbot (RAG)
+- Markdown Knowledge Base
+- Groq LLM Integration
+- GitHub Analytics Sync
+- LeetCode GraphQL Sync
+- Background Scheduler
+- REST APIs
+- Intelligent Caching
+
+## Tech Stack
+
+- Node.js
+- Express
+- Groq
+- GraphQL
+- Axios
+- node-cron
+
+## Installation
+
+npm install
+
+cp .env.example .env
+
+npm run dev
