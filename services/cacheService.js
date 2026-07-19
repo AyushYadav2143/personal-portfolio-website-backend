@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 
 const CACHE_DIR = path.join(process.cwd(), "cache");
-
+console.log("📁 Cache directory:", CACHE_DIR);
 // ------------------------------------
 // Ensure cache directory exists
 // ------------------------------------
@@ -22,6 +22,7 @@ export async function saveCache(filename, data) {
     await ensureCacheDirectory();
 
     const filePath = path.join(CACHE_DIR, filename);
+    console.log("💾 Saving:", filePath);
 
     await fs.writeFile(
         filePath,
@@ -41,6 +42,7 @@ export async function loadCache(filename) {
         await ensureCacheDirectory();
 
         const filePath = path.join(CACHE_DIR, filename);
+        console.log("📖 Loading:", filePath);
 
         const data = await fs.readFile(
             filePath,
