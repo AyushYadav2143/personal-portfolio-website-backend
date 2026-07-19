@@ -10,6 +10,7 @@ import { buildVectorStore } from "./ai/embeddings/vectorStore.js";
 import { startScheduler } from "./services/schedulerService.js";
 import { notFound } from "./middleware/notFound.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { syncAll } from "./services/syncService.js";
 
 dotenv.config();
 
@@ -59,16 +60,28 @@ app.use(errorHandler);
 
 async function startServer() {
     try {
+
         console.log("🧠 Building vector store...");
-
         await buildVectorStore();
-
         console.log("✅ Vector store ready.");
 
-        startScheduler();
+        // Initial cache sync
+        console.log("🔄 Performing initial sync...");
 
+        try {
+            await syncAll();
+            console.log("✅ Initial sync completed.");
+        } catch (err) {
+            console.error("⚠️ Initial sync failed:");
+            console.error(err.message);
+            console.log("⚠️ Server will continue to run.");
+        }
+
+        // Start scheduler
+        startScheduler();
         console.log("🕒 Scheduler started.");
 
+        // Start Express
         app.listen(PORT, () => {
             console.log(`🚀 Server running on port ${PORT}`);
         });
