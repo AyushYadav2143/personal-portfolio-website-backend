@@ -30,12 +30,20 @@ export async function searchBrain(query, topK = 5) {
 
     // Intent detection
     const q = query.toLowerCase();
+    const isGeekPoints =
+        q.includes("geekpoints") ||
+        q.includes("geek points");
+
+    const isPortfolio =
+        q.includes("portfolio website") ||
+        q.includes("personal portfolio");
 
     const isAbout =
-        q.includes("yourself") ||
-        q.includes("about") ||
+        q === "about" ||
+        q.includes("about yourself") ||
         q.includes("who are you") ||
-        q.includes("introduce");
+        q.includes("introduce yourself") ||
+        q.includes("tell me about yourself");
 
     const isSkills =
         q.includes("skill") ||
@@ -118,6 +126,19 @@ export async function searchBrain(query, topK = 5) {
             if (title.includes("leadership")) score += 0.20;
 
             if (title.includes("community")) score += 0.15;
+        }
+        if (isGeekPoints) {
+
+            if (doc.folder === "projects") score += 0.45;
+
+            if (title.includes("geekpoints")) score += 0.60;
+}
+
+        if (isPortfolio) {
+
+            if (doc.folder === "projects") score += 0.35;
+
+            if (title.includes("portfolio")) score += 0.60;
         }
 
         return {
