@@ -1,5 +1,22 @@
 # GeekPoints
 
+## Quick Summary
+
+GeekPoints is my flagship full-stack project.
+
+It is a custom-built club management platform that automates contribution tracking, task allocation, member performance analysis, and real-time leaderboards for the GeeksforGeeks Student Chapter at Lovely Professional University.
+
+If someone asks:
+
+- Tell me about GeekPoints
+- Explain GeekPoints
+- What is GeekPoints?
+- Show me your best project
+- Tell me about your club management system
+
+this document contains the answer.
+# GeekPoints
+
 ## Overview
 
 GeekPoints is a custom-built club management and contribution tracking platform developed exclusively for the GeeksforGeeks Student Chapter at Lovely Professional University (LPU). The platform was designed to create transparency in member contributions, automate repetitive administrative tasks, and motivate members through a fair point-based recognition system.
