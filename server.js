@@ -11,6 +11,8 @@ import { startScheduler } from "./services/schedulerService.js";
 import { notFound } from "./middleware/notFound.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { syncAll } from "./services/syncService.js";
+import healthRoute from "./routes/health.js";
+
 
 dotenv.config();
 
@@ -31,6 +33,7 @@ app.use(compression());
 ========================================================== */
 
 app.use("/api/v1", apiRoutes);
+app.use("/api/v1/health", healthRoute);
 
 /* ==========================================================
                       Health Check
