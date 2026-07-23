@@ -26,47 +26,91 @@ export async function fetchGithubData() {
 
     try {
 
-        // Fetch profile and repositories in parallel
-        const [profileRes, reposRes] = await Promise.all([
+        // ------------------------------------
+        // Fetch profile (REST)
+        // ------------------------------------
 
-            axios.get(
-                `https://api.github.com/users/${username}`,
-                { headers }
-            ),
+        const profilePromise = axios.get(
+            `https://api.github.com/users/${username}`,
+            { headers }
+        );
 
-            axios.get(
-                `https://api.github.com/users/${username}/repos?per_page=100`,
-                { headers }
-            )
+        // ------------------------------------
+        // Fetch all repositories (REST)
+        // Used for stats
+        // ------------------------------------
 
+        const reposPromise = axios.get(
+            `https://api.github.com/users/${username}/repos?per_page=100`,
+            { headers }
+        );
+
+        // ------------------------------------
+        // Fetch pinned repositories (GraphQL)
+        // ------------------------------------
+
+        const graphQLQuery = {
+            query: `
+                query($login: String!) {
+                    user(login: $login) {
+                        pinnedItems(first: 6, types: REPOSITORY) {
+                            nodes {
+                                ... on Repository {
+                                    name
+                                    description
+                                    url
+                                    updatedAt
+                                    stargazerCount
+                                    forkCount
+                                    primaryLanguage {
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `,
+            variables: {
+                login: username
+            }
+        };
+
+        const pinnedPromise = axios.post(
+            "https://api.github.com/graphql",
+            graphQLQuery,
+            { headers }
+        );
+
+        // ------------------------------------
+
+        const [
+            profileRes,
+            reposRes,
+            pinnedRes
+        ] = await Promise.all([
+            profilePromise,
+            reposPromise,
+            pinnedPromise
         ]);
 
         const profile = profileRes.data;
         const repos = reposRes.data;
 
-        // Calculate statistics
+        const pinnedRepos =
+            pinnedRes.data.data.user.pinnedItems.nodes;
+
+        // ------------------------------------
+        // Calculate stats
+        // ------------------------------------
+
         const totalStars = repos.reduce(
             (sum, repo) => sum + repo.stargazers_count,
             0
         );
 
-        const totalForks = repos.reduce(
-            (sum, repo) => sum + repo.forks_count,
-            0
-        );
-
-        // Get 5 most recently updated repositories
-        const recentRepos = [...repos]
-            .sort(
-                (a, b) =>
-                    new Date(b.updated_at) -
-                    new Date(a.updated_at)
-            )
-            .slice(0, 5);
-
         return {
 
-            // Keep raw repositories for analytics
             rawRepositories: repos,
 
             profile: {
@@ -97,27 +141,25 @@ export async function fetchGithubData() {
 
                 totalStars,
 
-                totalForks,
-
                 repositories: repos.length
 
             },
 
-            recentRepositories: recentRepos.map(repo => ({
+            pinnedRepositories: pinnedRepos.map(repo => ({
 
                 name: repo.name,
 
                 description: repo.description,
 
-                language: repo.language,
+                language: repo.primaryLanguage?.name ?? null,
 
-                stars: repo.stargazers_count,
+                stars: repo.stargazerCount,
 
-                forks: repo.forks_count,
+                forks: repo.forkCount,
 
-                updatedAt: repo.updated_at,
+                updatedAt: repo.updatedAt,
 
-                url: repo.html_url
+                url: repo.url
 
             })),
 
@@ -149,6 +191,7 @@ export async function fetchGithubData() {
 // ------------------------------------
 // Update GitHub cache
 // ------------------------------------
+
 export async function updateGithubCache() {
 
     const githubData = await fetchGithubData();
@@ -164,6 +207,7 @@ export async function updateGithubCache() {
 // ------------------------------------
 // Read GitHub cache
 // ------------------------------------
+
 export async function getGithubCache() {
 
     return await loadCache("github.json");

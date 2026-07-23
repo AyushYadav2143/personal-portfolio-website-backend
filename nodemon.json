@@ -1,0 +1,15 @@
+{
+  "watch": [
+    "server.js",
+    "controllers",
+    "routes",
+    "services",
+    "utils",
+    "brain"
+  ],
+  "ignore": [
+    "cache/**",
+    "node_modules/**"
+  ],
+  "ext": "js,json,md"
+}

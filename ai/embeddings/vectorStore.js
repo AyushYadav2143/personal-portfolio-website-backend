@@ -20,7 +20,7 @@ export async function buildVectorStore() {
             embedding
         });
 
-        console.log(`Indexed: ${chunk.title}`);
+        
     }
 
     console.log(`Finished indexing ${vectorStore.length} chunks.`);
